@@ -1,0 +1,40 @@
+---
+description: Lab Manual Q&A Agent — always-on project guardrails
+globs:
+alwaysApply: true
+---
+
+Full spec, architecture, and functional requirements live in `AGENTS.md` at the repo root — read it before starting any task in this repo. This file is the short, always-loaded version of the hard constraints only.
+
+# Stack (do not substitute)
+Python 3.11+, Streamlit, LangChain, ChromaDB (local persistent), sentence-transformers
+(all-MiniLM-L6-v2 embeddings + cross-encoder/ms-marco-MiniLM-L-6-v2 reranker), rank_bm25,
+pdfplumber/pypdf, Anthropic `anthropic` SDK, python-dotenv. No FastAPI, no Docker, no auth,
+no new dependency without asking first.
+
+# Build order
+utils.py -> pdf_loader.py -> chunking.py -> vectorstore.py -> retrieval.py -> agent.py -> app.py.
+Each src/ module ships as signatures + docstrings only until implemented one at a time.
+Test a module directly before wiring it into app.py.
+
+# Hard "never" list
+- Never fabricate a working function — every shipped function must run against the real PDF,
+  the real Chroma store, and the real Claude API. No hardcoded/mock return values "for now."
+- Never use `except: pass` or swallow an exception silently — log it, and surface user-facing
+  errors in the Streamlit UI with a specific message, never a raw traceback.
+- Never leave `# TODO: implement later` in code you present as finished.
+- Never skip the citation-faithfulness check described in AGENTS.md §3 — if the LLM cites a
+  page that wasn't actually retrieved, that citation must be stripped and logged, not trusted.
+- Never add auth, multi-tenancy, cloud deployment, or CI/CD scaffolding — out of scope.
+- Never hand-roll a PDF parser, text splitter, or vector index when the chosen libraries do it.
+- Never import a package without verifying it's installed (`pip show <package>`) and listed in
+  requirements.txt first.
+- Never claim a feature works without actually running it.
+- Never delete or overwrite `.env`, `requirements.txt`, or anything under `data/` without
+  explicit user confirmation.
+- Never pad comments/docstrings/README with restating-the-obvious text or marketing language.
+
+# Process
+Before any multi-file refactor: `git add -A && git commit -m "checkpoint: before <task>"`.
+For nontrivial new modules: propose the function signature + docstring first, confirm, then
+implement. Be concise — don't narrate standard code patterns, only explain non-obvious calls.

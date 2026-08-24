@@ -1,0 +1,26 @@
+# Environments
+venv/
+.venv/
+env/
+__pycache__/
+*.pyc
+
+# Secrets
+.env
+
+# App data (regenerated locally, don't commit user PDFs or vector DB)
+data/uploaded_pdfs/*
+!data/uploaded_pdfs/.gitkeep
+data/vector_store/*
+!data/vector_store/.gitkeep
+
+# Logs
+*.log
+
+# OS / editor
+.DS_Store
+.vscode/
+.idea/
+
+# Cursor indexing noise
+*.lock
